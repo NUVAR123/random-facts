@@ -2,82 +2,371 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Случайный факт</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            background: #111;
-            color: white;
+            min-height: 100vh;
             font-family: Arial, sans-serif;
+            color: white;
+
+            background-image:
+                linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+                url("https://images.unsplash.com/photo-1448375240586-882707db888b");
+
+            background-size: cover;
+            background-position: center;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+
+            transition: background-image 0.5s;
         }
 
-        .box {
-            background: #222;
-            padding: 40px;
-            border-radius: 20px;
+        .container {
+            width: 90%;
+            max-width: 700px;
             text-align: center;
-            width: 500px;
-            box-shadow: 0 0 30px #000;
         }
 
         h1 {
-            color: #ffd000;
+            font-size: 48px;
+            text-shadow: 0 3px 10px black;
         }
 
-        #fact {
-            font-size: 22px;
-            margin: 30px 0;
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 25px 0;
         }
 
         button {
-            background: #ffd000;
             border: none;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 18px;
             cursor: pointer;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 16px;
         }
 
-        button:hover {
-            background: #ffea70;
+        .category {
+            background: white;
+            color: black;
+        }
+
+        .category:hover {
+            transform: scale(1.05);
+        }
+
+        .fact-box {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 40px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(8px);
+        }
+
+        #fact {
+            font-size: 24px;
+            line-height: 1.5;
+            min-height: 120px;
+        }
+
+        #newFact {
+            background: #ffd000;
+            color: black;
+            font-size: 18px;
+            padding: 16px 30px;
+        }
+
+        #newFact:hover {
+            background: #ffe66d;
+        }
+
+        #status {
+            margin-top: 20px;
+            opacity: 0.8;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="box">
-        <h1>🧠 СЛУЧАЙНЫЙ ФАКТ</h1>
+<div class="container">
 
-        <p id="fact">
-            Нажми на кнопку, чтобы узнать факт!
-        </p>
+    <h1>🧠 СЛУЧАЙНЫЙ ФАКТ</h1>
 
-        <button onclick="newFact()">🎲 Новый факт</button>
+    <div class="categories">
+
+        <button class="category" onclick="changeCategory('nature')">
+            🌲 Природа
+        </button>
+
+        <button class="category" onclick="changeCategory('space')">
+            🌌 Космос
+        </button>
+
+        <button class="category" onclick="changeCategory('animals')">
+            🐾 Животные
+        </button>
+
+        <button class="category" onclick="changeCategory('science')">
+            🔬 Наука
+        </button>
+
     </div>
 
-    <script>
-        const facts = [
-            "У осьминога три сердца.",
-            "Банан — это ягода с точки зрения ботаники.",
-            "Мёд может храниться очень долго.",
-            "У улиток могут быть тысячи зубов.",
-            "На Венере день длиннее года.",
-            "Акулы появились на Земле раньше деревьев.",
-            "Сердце синего кита может весить сотни килограммов.",
-            "Некоторые черепахи могут дышать через кожу."
-        ];
+    <div class="fact-box">
 
-        function newFact() {
-            const random = Math.floor(Math.random() * facts.length);
-            document.getElementById("fact").textContent = facts[random];
+        <p id="fact">
+            Выбери категорию и нажми кнопку!
+        </p>
+
+        <button id="newFact" onclick="getFact()">
+            🎲 Новый факт
+        </button>
+
+        <div id="status"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    let currentCategory = "nature";
+
+
+    const categories = {
+
+        nature: "Природа",
+
+        space: "Космос",
+
+        animals: "Животные",
+
+        science: "Наука"
+
+    };
+
+
+    const backgrounds = {
+
+        nature:
+        "https://images.unsplash.com/photo-1448375240586-882707db888b",
+
+        space:
+        "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa",
+
+        animals:
+        "https://images.unsplash.com/photo-1549366021-9f761d450615",
+
+        science:
+        "https://images.unsplash.com/photo-1532094349884-543bc11b234d"
+
+    };
+
+
+    function changeCategory(category) {
+
+        currentCategory = category;
+
+        document.body.style.backgroundImage =
+            `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+            url("${backgrounds[category]}")`;
+
+        document.getElementById("fact").textContent =
+            "Ищу факт в интернете...";
+
+        getFact();
+
+    }
+
+
+    async function getFact() {
+
+        const factElement =
+            document.getElementById("fact");
+
+        const statusElement =
+            document.getElementById("status");
+
+
+        factElement.textContent =
+            "🔎 Ищу новый факт в интернете...";
+
+
+        statusElement.textContent =
+            "Подключение к Википедии";
+
+
+        try {
+
+            let usedFacts =
+                JSON.parse(
+                    localStorage.getItem("usedFacts_" + currentCategory)
+                ) || [];
+
+
+            let article;
+
+
+            let attempts = 0;
+
+
+            while (attempts < 20) {
+
+                attempts++;
+
+
+                const searchUrl =
+                    "https://ru.wikipedia.org/w/api.php" +
+
+                    "?action=query" +
+
+                    "&list=search" +
+
+                    "&srsearch=" +
+
+                    encodeURIComponent(categories[currentCategory]) +
+
+                    "&srlimit=50" +
+
+                    "&format=json" +
+
+                    "&origin=*";
+
+
+                const searchResponse =
+                    await fetch(searchUrl);
+
+
+                const searchData =
+                    await searchResponse.json();
+
+
+                const results =
+                    searchData.query.search;
+
+
+                const randomIndex =
+                    Math.floor(Math.random() * results.length);
+
+
+                article =
+                    results[randomIndex];
+
+
+                if (!usedFacts.includes(article.pageid)) {
+
+                    break;
+
+                }
+
+            }
+
+
+            if (usedFacts.includes(article.pageid)) {
+
+                usedFacts = [];
+
+            }
+
+
+            const articleUrl =
+                "https://ru.wikipedia.org/w/api.php" +
+
+                "?action=query" +
+
+                "&prop=extracts" +
+
+                "&exintro=true" +
+
+                "&explaintext=true" +
+
+                "&pageids=" + article.pageid +
+
+                "&format=json" +
+
+                "&origin=*";
+
+
+            const articleResponse =
+                await fetch(articleUrl);
+
+
+            const articleData =
+                await articleResponse.json();
+
+
+            const page =
+                articleData.query.pages[article.pageid];
+
+
+            let text =
+                page.extract;
+
+
+            if (text.length > 500) {
+
+                text =
+                    text.substring(0, 500) + "...";
+
+            }
+
+
+            factElement.innerHTML =
+
+                "💡 <b>" +
+
+                page.title +
+
+                "</b><br><br>" +
+
+                text;
+
+
+            usedFacts.push(article.pageid);
+
+
+            localStorage.setItem(
+
+                "usedFacts_" + currentCategory,
+
+                JSON.stringify(usedFacts)
+
+            );
+
+
+            statusElement.textContent =
+
+                "Источник: Википедия • Факт уже сохранён, повторно не появится";
+
+
         }
-    </script>
+
+        catch (error) {
+
+            factElement.textContent =
+
+                "❌ Не удалось получить факт. Проверь интернет.";
+
+            statusElement.textContent = "";
+
+        }
+
+    }
+
+</script>
 
 </body>
 </html>
